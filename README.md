@@ -219,14 +219,7 @@ Within the download you'll find the following directories and files:
    |    |    |    |-- register.html         # Register page
    |    |    |
    |    |    |-- home/                      # UI Kit Pages
-   |    |         |-- index-order-page-financial.html            # Index-order-page for financial || made by Malleswari and Balakumari
-   |    |         |-- index-order-page-sales.html                # index-order page for the sales manager || MAde by Pujitha and Sirisha
-   |    |         |-- index-data-metric-page-financial.html            # Index-data-metricr-page for financial || Made by Pranita
-   |    |         |-- index-data-metric-page-sales.html               # index data metric for sales manager || made by Balakumari and Pradeep
-   |    |         |-- index-product-page-financial.html            # Index-product-page for financial || made by Ritik , Accompanied by Dinakar
-   |    |         |-- index-product-page-sales.html            # Index-product-page for sales || made by Prathiksha and satya || modified by Pranita
-   |    |         |-- index-report-financial.html               #
-   |    |         |-- index-report-sales.html                   #
+   |    |         |-- index-population.html                 #
    |    |         |-- 404-page.html         # 404 page
    |    |         |-- *.html                # All other pages
    |    |    
