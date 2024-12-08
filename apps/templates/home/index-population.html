@@ -1,0 +1,247 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+<!-- Specific Page CSS goes HERE -->
+{% block stylesheets %}
+<style>
+    .card-equal-height {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-equal-height .card-body {
+        flex: 1;
+    }
+
+    .equal-height-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .equal-height-row > .col-lg-6, .equal-height-row > .col-md-6 {
+        display: flex;
+        flex: 1;
+        margin-bottom: 30px;
+    }
+
+    /* Add spacing between the search input and the button */
+    .input-group .form-control {
+        margin-right: 10px;
+    }
+
+    .chart-container {
+        position: relative;
+        width: 100%;
+    }
+
+    #orderStatusChart {
+        height: 400px !important;
+    }
+    #customerFeedbackChart {
+        height: 300px !important;
+    }
+    h5.card-title {
+        font-size: 27px;
+        font-family: sans-serif;
+    }
+
+    /* Add spacing between rows */
+    .row-spacing {
+        margin-bottom: 30px;
+    }
+
+    /* Style for the dropdown */
+    .dropdown {
+        margin-left: 20px;
+    }
+
+    .dropdown-menu {
+        background-color: #525F7F !important;
+    }
+
+    .dropdown-item {
+        color: white !important;
+    }
+
+    .dropdown-item:hover {
+        background-color: #3a4750 !important;
+    }
+    .chart-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    canvas {
+        width: 100% !important;   /* Ensure full width */
+        height: 100% !important;  /* Ensure full height within container */
+        max-height: 250px;        /* Add a max height constraint */
+    }
+
+    /* Additional Styles for the new Row layout */
+    .full-width-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+    }
+
+    .chart-container {
+        height: 100% !important;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="content">
+
+    <!-- Population Search by Ward and Gender-Based Comparison -->
+    <div class="row equal-height-row row-spacing">
+        <div class="col-lg-6">
+            <div class="card card-equal-height">
+                <div class="card-header">
+                    <h5 class="card-title">Population Search by Ward</h5>
+                    <div class="input-group">
+                        <input type="text" id="populationSearchByWardChart" class="form-control" placeholder="Enter Ward no.">
+                        <button id="search-button" class="btn btn-primary">Search</button>
+                    </div>
+                </div>
+                <div class="card-body population-info-table">
+                    <h4 class="card-title" style="font-size: 25px;">Population Info</h4>
+                    <table class="table table-borderless">
+                        <tbody>
+                            <tr>
+                                <td><strong>Total Population:</strong></td>
+                                <td><span id="total-pop"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Female Population:</strong></td>
+                                <td><span id="total-female"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Male Population:</strong></td>
+                                <td><span id="total-male"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scheduled Caste:</strong></td>
+                                <td><span id="total-caste"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scheduled Tribes:</strong></td>
+                                <td><span id="total-tribes"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Literates:</strong></td>
+                                <td><span id="total-literate"></span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Total Illiterates:</strong></td>
+                                <td><span id="total-illiterate"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card card-chart card-equal-height">
+                <div class="card-header">
+                    <h5 class="card-title">Gender-Based Comparison</h5>
+                    <!-- Dropdown added here -->
+                    <div class="dropdown d-inline">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select Analysis
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="#" id="population-analysis">Population</a>
+                            <a class="dropdown-item" href="#" id="literacy-analysis">Literacy</a>
+                            <a class="dropdown-item" href="#" id="illiteracy-analysis">Illiterate</a>
+                            <a class="dropdown-item" href="#" id="tribes-analysis">Tribes</a>
+                            <a class="dropdown-item" href="#" id="castes-analysis">Castes</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body chart-container">
+                    <!-- Chart will be rendered here -->
+                    <canvas id="genderComparisonChart" style="height: 400px; width: 400px;"></canvas>
+                </div>
+            </div>
+        </div>    
+    </div>
+
+    <!-- Population Trends Over Time -->
+    <div class="row equal-height-row row-spacing">
+        <div class="col-md-12">
+            <div class="card card-equal-height">
+                <div class="card-header">
+                    <h5 class="card-title">Population Trends Over Time</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="populationTrendsOverTimeChart" style="height: 450px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Literacy, Illiteracy, and Caste and Tribes Analysis (Updated Layout) -->
+    <div class="row full-width-row row-spacing">
+        <div class="col-md-4">
+            <div class="card card-chart card-equal-height">
+                <div class="card-header">
+                    <h5 class="card-title">Literacy Analysis</h5>
+                </div>
+                <div class="card-body" style="padding: 0; height: 250px;"> <!-- Adjusted height -->
+                    <div class="chart-container" style="height: 100%; width: 100%;"> <!-- Added wrapper -->
+                        <canvas id="literacyAnalysisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-chart card-equal-height">
+                <div class="card-header">
+                    <h5 class="card-title">Illiteracy Analysis</h5>
+                </div>
+                <div class="card-body" style="padding: 0; height: 250px;"> <!-- Adjusted height -->
+                    <div class="chart-container" style="height: 100%; width: 100%;"> <!-- Added wrapper -->
+                        <canvas id="illiteracyAnalysisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-chart card-equal-height">
+                <div class="card-header">
+                    <h5 class="card-title">Caste and Tribes Analysis</h5>
+                </div>
+                <div class="card-body" style="padding: 0; height: 250px;"> <!-- Adjusted height -->
+                    <div class="chart-container" style="height: 100%; width: 100%;"> <!-- Added wrapper -->
+                        <canvas id="casteTribesAnalysisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ward Wise Analysis (New Row) -->
+    <div class="row equal-height-row row-spacing">
+        <div class="col-md-12">
+            <div class="card card-chart card-equal-height">
+                <div class="card-header">
+                    <h5 class="card-title">Ward Wise Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="wardWiseAnalysisChart" style="height: 500px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE -->
+{% block javascripts %}
+<script src="{{ url_for('static', filename='assets/demo/demo.js') }}"></script>
+{% endblock javascripts %}

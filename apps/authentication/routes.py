@@ -1,67 +1,52 @@
-# -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
-from flask import render_template, redirect, request, url_for
-from flask_login import (
-    current_user,
-    login_user,
-    logout_user
-)
-
-from flask_dance.contrib.github import github
-
-from apps import db, login_manager
+from flask import render_template, redirect, request, url_for , flash, session
+from flask_login import login_user, login_required, logout_user, current_user
 from apps.authentication import blueprint
-from apps.authentication.forms import LoginForm, CreateAccountForm
+from apps.authentication.forms import LoginForm
 from apps.authentication.models import Users
-
-from apps.authentication.util import verify_pass
-
+from apps import login_manager
+import psycopg2
+from psycopg2.extras import DictCursor
 
 @blueprint.route('/')
 def route_default():
-    return redirect(url_for('authentication_blueprint.login'))
+    # Directly render the index-population.html page
+    return render_template('home/index-population.html')
 
-# Login & Registration
 
-@blueprint.route("/github")
-def login_github():
-    """ Github login """
-    if not github.authorized:
-        return redirect(url_for("github.login"))
+# Database connection function
+def get_db_connection():
+    return psycopg2.connect(
+        host="localhost",
+        database="majorprojectpredictivemodel",
+        user="postgres",
+        password="Pranita%401509"
+    )
 
-    res = github.get("/user")
-    return redirect(url_for('home_blueprint.index'))
-    
+
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     login_form = LoginForm(request.form)
     if 'login' in request.form:
-
-        # read form data
         username = request.form['username']
         password = request.form['password']
-
-        # Locate user
-        user = Users.query.filter_by(username=username).first()
-
-        # Check the password
-        if user and verify_pass(password, user.password):
-
+        
+        user = Users.query.filter_by(username=username, password=password).first()
+        
+        if user :
             login_user(user)
-            return redirect(url_for('authentication_blueprint.route_default'))
+            session['username'] = username  # Store username in session
+            if user.roleid == 1:
+                return redirect(url_for('home.index_sales'))
+            elif user.roleid == 2:
+                return redirect(url_for('home.index_financial'))
+        else:
+            return render_template('accounts/login.html',
+                                   msg='Wrong user or password',
+                                   form=login_form)
 
-        # Something (user or pass) is not ok
-        return render_template('accounts/login.html',
-                               msg='Wrong user or password',
-                               form=login_form)
+    return render_template('accounts/login.html', form=login_form)
 
-    if not current_user.is_authenticated:
-        return render_template('accounts/login.html',
-                               form=login_form)
-    return redirect(url_for('home_blueprint.index'))
+# Remove GitHub-related routes and keep other necessary routes
 
 
 @blueprint.route('/register', methods=['GET', 'POST'])
@@ -117,6 +102,11 @@ def logout():
 def unauthorized_handler():
     return render_template('home/page-403.html'), 403
 
+#### -- added 16-07-24
+#@login_manager.unauthorized_handler
+#def unauthorized_handler():
+#    return redirect(url_for('authentication_blueprint.login'))
+####
 
 @blueprint.errorhandler(403)
 def access_forbidden(error):

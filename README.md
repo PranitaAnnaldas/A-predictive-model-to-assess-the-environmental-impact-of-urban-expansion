@@ -182,7 +182,7 @@ The documentation for the **Black Dashboard Flask** is hosted at our [website](h
 
 <br />
 
-## File Structure
+## File Structure -- Contributors in this project || NAMES MENTIONED || 
 
 Within the download you'll find the following directories and files:
 
@@ -192,7 +192,7 @@ Within the download you'll find the following directories and files:
    |-- apps/
    |    |
    |    |-- home/                           # A simple app that serve HTML files
-   |    |    |-- routes.py                  # Define app routes
+   |    |    |-- routes.py                  # Define app routes | made changes for the routing by -- avilash and pranita
    |    |
    |    |-- authentication/                 # Handles auth routes (login and register)
    |    |    |-- routes.py                  # Define authentication routes  
@@ -200,11 +200,12 @@ Within the download you'll find the following directories and files:
    |    |    |-- forms.py                   # Define auth forms (login and register) 
    |    |
    |    |-- static/
-   |    |    |-- <css, JS, images>          # CSS files, Javascripts files
+   |    |    |-- <css, JS, images>          # CSS files, Javascripts files || made changes as per the graphs by Pranita
    |    |
    |    |-- templates/                      # Templates used to render pages
    |    |    |-- includes/                  # HTML chunks and components
-   |    |    |    |-- navigation.html       # Top menu component
+   |    |    |    |-- navigation.html       # Top menu component || made by Pavan | modified by Avilash 
+   |    |    |    |-- navigation-sales.html          # navigation header as per the sales page | made by ankit, | modified by Pranita
    |    |    |    |-- sidebar.html          # Sidebar component
    |    |    |    |-- footer.html           # App Footer
    |    |    |    |-- scripts.html          # Scripts common to all pages
@@ -214,11 +215,18 @@ Within the download you'll find the following directories and files:
    |    |    |    |-- base.html             # Used by common pages
    |    |    |
    |    |    |-- accounts/                  # Authentication pages
-   |    |    |    |-- login.html            # Login page
+   |    |    |    |-- login.html            # Login page | linked with the Database and its routing and functionality by Avilash
    |    |    |    |-- register.html         # Register page
    |    |    |
    |    |    |-- home/                      # UI Kit Pages
-   |    |         |-- index.html            # Index page
+   |    |         |-- index-order-page-financial.html            # Index-order-page for financial || made by Malleswari and Balakumari
+   |    |         |-- index-order-page-sales.html                # index-order page for the sales manager || MAde by Pujitha and Sirisha
+   |    |         |-- index-data-metric-page-financial.html            # Index-data-metricr-page for financial || Made by Pranita
+   |    |         |-- index-data-metric-page-sales.html               # index data metric for sales manager || made by Balakumari and Pradeep
+   |    |         |-- index-product-page-financial.html            # Index-product-page for financial || made by Ritik , Accompanied by Dinakar
+   |    |         |-- index-product-page-sales.html            # Index-product-page for sales || made by Prathiksha and satya || modified by Pranita
+   |    |         |-- index-report-financial.html               #
+   |    |         |-- index-report-sales.html                   #
    |    |         |-- 404-page.html         # 404 page
    |    |         |-- *.html                # All other pages
    |    |    
@@ -228,7 +236,7 @@ Within the download you'll find the following directories and files:
    |-- requirements.txt                     # App Dependencies
    |
    |-- .env                                 # Inject Configuration via Environment
-   |-- run.py                               # Start the app - WSGI gateway
+   |-- run.py                               # Start the app - WSGI gateway || all names are mentioned of the contributors
    |
    |-- ************************************************************************
 ```

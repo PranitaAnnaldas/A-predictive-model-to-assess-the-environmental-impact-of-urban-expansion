@@ -9472,14 +9472,14 @@ fieldset[disabled]
     color: #9A9A9A; } }
 
 .footer {
-  padding: 24px 0 24px 250px; }
+  padding: 24px 0 24px 25px; } /*padding changed left from 250 to 25 (last one)*/
   .footer [class*="container-"] {
     padding: 0; }
   .footer .nav {
     display: inline-block;
     float: left;
     margin-bottom: 0;
-    padding-left: 30px;
+    padding-left: 20px; /*padding  changed avilash */
     list-style: none; }
   .footer .nav-item {
     display: inline-block; }
@@ -10408,10 +10408,12 @@ img {
   .navbar .btn {
     margin: 0 5px 0 10px; }
   .navbar.navbar-absolute {
-    position: absolute;
+    position: fixed;
     z-index: 1050; }
+    /*
   .navbar.navbar-transparent {
     background: transparent !important; }
+    */
   .navbar.bg-white .navbar-nav .search-bar.input-group i {
     color: #222a42; }
   .navbar.bg-white .navbar-nav .search-bar.input-group .form-control {
@@ -11655,7 +11657,7 @@ table.tablesorter thead tr .headerSortDown {
   .main-panel[data="primary"] {
     border-top: 2px solid #e14eca; }
   .main-panel > .content {
-    padding: 78px 30px 30px 280px;
+    padding: 78px 30px 30px 30px;
     min-height: calc(100vh - 70px); }
   .main-panel > .navbar {
     margin-bottom: 0; }

@@ -1,742 +1,475 @@
-type = ['primary', 'info', 'success', 'warning', 'danger'];
-
-demo = {
-  initPickColor: function() {
-    $('.pick-class-label').click(function() {
-      var new_class = $(this).attr('new-class');
-      var old_class = $('#display-buttons').attr('data-class');
-      var display_div = $('#display-buttons');
-      if (display_div.length) {
-        var display_buttons = display_div.find('.btn');
-        display_buttons.removeClass(old_class);
-        display_buttons.addClass(new_class);
-        display_div.attr('data-class', new_class);
-      }
+// Function to handle rendering of Pie Chart
+function renderPieChart(ctx, chartData) {
+    if (!chartData || !chartData.datasets || chartData.datasets[0].data.every(val => val === 0)) {
+        alert("No data available for this chart.");
+        return;
+    }
+    new Chart(ctx, {
+        type: 'pie',
+        data: chartData
     });
-  },
+}
 
-  initDocChart: function() {
-    chartColor = "#FFFFFF";
-
-    // General configuration for the charts with Line gradientStroke
-    gradientChartOptionsConfiguration = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-      tooltips: {
-        bodySpacing: 4,
-        mode: "nearest",
-        intersect: 0,
-        position: "nearest",
-        xPadding: 10,
-        yPadding: 10,
-        caretPadding: 10
-      },
-      responsive: true,
-      scales: {
-        yAxes: [{
-          display: 0,
-          gridLines: 0,
-          ticks: {
-            display: false
-          },
-          gridLines: {
-            zeroLineColor: "transparent",
-            drawTicks: false,
-            display: false,
-            drawBorder: false
-          }
-        }],
-        xAxes: [{
-          display: 0,
-          gridLines: 0,
-          ticks: {
-            display: false
-          },
-          gridLines: {
-            zeroLineColor: "transparent",
-            drawTicks: false,
-            display: false,
-            drawBorder: false
-          }
-        }]
-      },
-      layout: {
-        padding: {
-          left: 0,
-          right: 0,
-          top: 15,
-          bottom: 15
+// Function to handle rendering of Line Chart
+function renderLineChart(ctx, chartData) {
+    if (!chartData || !chartData.datasets || chartData.datasets[0].data.every(val => val === 0)) {
+        alert("No data available for this chart.");
+        return;
+    }
+    new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    beginAtZero: true
+                },
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
-      }
-    };
-
-    ctx = document.getElementById('lineChartExample').getContext("2d");
-
-    gradientStroke = ctx.createLinearGradient(500, 0, 100, 0);
-    gradientStroke.addColorStop(0, '#80b6f4');
-    gradientStroke.addColorStop(1, chartColor);
-
-    gradientFill = ctx.createLinearGradient(0, 170, 0, 50);
-    gradientFill.addColorStop(0, "rgba(128, 182, 244, 0)");
-    gradientFill.addColorStop(1, "rgba(249, 99, 59, 0.40)");
-
-    myChart = new Chart(ctx, {
-      type: 'line',
-      responsive: true,
-      data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        datasets: [{
-          label: "Active Users",
-          borderColor: "#f96332",
-          pointBorderColor: "#FFF",
-          pointBackgroundColor: "#f96332",
-          pointBorderWidth: 2,
-          pointHoverRadius: 4,
-          pointHoverBorderWidth: 1,
-          pointRadius: 4,
-          fill: true,
-          backgroundColor: gradientFill,
-          borderWidth: 2,
-          data: [542, 480, 430, 550, 530, 453, 380, 434, 568, 610, 700, 630]
-        }]
-      },
-      options: gradientChartOptionsConfiguration
     });
-  },
+}
 
-  initDashboardPageCharts: function() {
+document.getElementById('search-button').addEventListener('click', function() {
+    const wardNo = document.getElementById('populationSearchByWardChart').value;
+    const year = document.getElementById('yearDropdown').value;  // Fetch year from dropdown
 
-    gradientChartOptionsConfigurationWithTooltipBlue = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
+    if (!wardNo){
+        wardNo = 1
+    }
+    if (!year){
+        year = 1991
+    }
 
-      tooltips: {
-        backgroundColor: '#f5f5f5',
-        titleFontColor: '#333',
-        bodyFontColor: '#666',
-        bodySpacing: 4,
-        xPadding: 12,
-        mode: "nearest",
-        intersect: 0,
-        position: "nearest"
-      },
-      responsive: true,
-      scales: {
-        yAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            suggestedMin: 60,
-            suggestedMax: 125,
-            padding: 20,
-            fontColor: "#2380f7"
-          }
-        }],
+    if (!wardNo || !year) {
+        alert('Please enter both Ward number and select a Year.');
+        return;
+    }
 
-        xAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(29,140,248,0.1)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            padding: 20,
-            fontColor: "#2380f7"
-          }
-        }]
-      }
-    };
+    fetch(`/api/population-search?wardno=${wardNo}&year=${year}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('No data found for the selected ward and year');
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Assuming the first item in the array is the required result
+            const result = data[0];
+            document.getElementById('total-pop').textContent = result.totalpop || 'N/A';
+            document.getElementById('total-female').textContent = result.totalfemale || 'N/A';
+            document.getElementById('total-male').textContent = result.totalmale || 'N/A';
+            document.getElementById('total-caste').textContent = result.totalcaste || 'N/A';
+            document.getElementById('total-tribes').textContent = result.totaltribes || 'N/A';
+            document.getElementById('total-literate').textContent = result.totalliterates || 'N/A';
+            document.getElementById('total-illiterate').textContent = result.totalilliterates || 'N/A';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('No data found or an error occurred while fetching the data.');
+        });
+});
 
-    gradientChartOptionsConfigurationWithTooltipPurple = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
+// Fetch Gender Comparison Data
+function fetchGenderComparison(year, comparisonType) {
+    fetch(`/api/gender-comparison?year=${year}&type=${comparisonType}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.message) {
+                console.error("Error fetching gender comparison data: ", data ? data.message : 'No data returned');
+                return;
+            }
 
-      tooltips: {
-        backgroundColor: '#f5f5f5',
-        titleFontColor: '#333',
-        bodyFontColor: '#666',
-        bodySpacing: 4,
-        xPadding: 12,
-        mode: "nearest",
-        intersect: 0,
-        position: "nearest"
-      },
-      responsive: true,
-      scales: {
-        yAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            suggestedMin: 60,
-            suggestedMax: 125,
-            padding: 20,
-            fontColor: "#9a9a9a"
-          }
-        }],
+            let male, female;
+            if (comparisonType === 'population') {
+                male = data.total_male;
+                female = data.total_female;
+            } else if (comparisonType === 'literacy') {
+                male = data.literate_male;
+                female = data.literate_female;
+            } else if (comparisonType === 'illiteracy') {
+                male = data.illiterate_male;
+                female = data.illiterate_female;
+            }
 
-        xAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(225,78,202,0.1)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            padding: 20,
-            fontColor: "#9a9a9a"
-          }
-        }]
-      }
-    };
+            const chartData = {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    data: [male, female],
+                    backgroundColor: ['rgba(54, 162, 235, 0.5)', 'rgba(75, 192, 192, 0.5)']
+                }]
+            };
 
-    gradientChartOptionsConfigurationWithTooltipOrange = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-
-      tooltips: {
-        backgroundColor: '#f5f5f5',
-        titleFontColor: '#333',
-        bodyFontColor: '#666',
-        bodySpacing: 4,
-        xPadding: 12,
-        mode: "nearest",
-        intersect: 0,
-        position: "nearest"
-      },
-      responsive: true,
-      scales: {
-        yAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            suggestedMin: 50,
-            suggestedMax: 110,
-            padding: 20,
-            fontColor: "#ff8a76"
-          }
-        }],
-
-        xAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(220,53,69,0.1)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            padding: 20,
-            fontColor: "#ff8a76"
-          }
-        }]
-      }
-    };
-
-    gradientChartOptionsConfigurationWithTooltipGreen = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-
-      tooltips: {
-        backgroundColor: '#f5f5f5',
-        titleFontColor: '#333',
-        bodyFontColor: '#666',
-        bodySpacing: 4,
-        xPadding: 12,
-        mode: "nearest",
-        intersect: 0,
-        position: "nearest"
-      },
-      responsive: true,
-      scales: {
-        yAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(29,140,248,0.0)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            suggestedMin: 50,
-            suggestedMax: 125,
-            padding: 20,
-            fontColor: "#9e9e9e"
-          }
-        }],
-
-        xAxes: [{
-          barPercentage: 1.6,
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(0,242,195,0.1)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            padding: 20,
-            fontColor: "#9e9e9e"
-          }
-        }]
-      }
-    };
-
-
-    gradientBarChartConfiguration = {
-      maintainAspectRatio: false,
-      legend: {
-        display: false
-      },
-
-      tooltips: {
-        backgroundColor: '#f5f5f5',
-        titleFontColor: '#333',
-        bodyFontColor: '#666',
-        bodySpacing: 4,
-        xPadding: 12,
-        mode: "nearest",
-        intersect: 0,
-        position: "nearest"
-      },
-      responsive: true,
-      scales: {
-        yAxes: [{
-
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(29,140,248,0.1)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            suggestedMin: 60,
-            suggestedMax: 120,
-            padding: 20,
-            fontColor: "#9e9e9e"
-          }
-        }],
-
-        xAxes: [{
-
-          gridLines: {
-            drawBorder: false,
-            color: 'rgba(29,140,248,0.1)',
-            zeroLineColor: "transparent",
-          },
-          ticks: {
-            padding: 20,
-            fontColor: "#9e9e9e"
-          }
-        }]
-      }
-    };
-
-    var ctx = document.getElementById("chartLinePurple").getContext("2d");
-
-    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-
-    gradientStroke.addColorStop(1, 'rgba(72,72,176,0.2)');
-    gradientStroke.addColorStop(0.2, 'rgba(72,72,176,0.0)');
-    gradientStroke.addColorStop(0, 'rgba(119,52,169,0)'); //purple colors
-
-    var data = {
-      labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-      datasets: [{
-        label: "Data",
-        fill: true,
-        backgroundColor: gradientStroke,
-        borderColor: '#d048b6',
-        borderWidth: 2,
-        borderDash: [],
-        borderDashOffset: 0.0,
-        pointBackgroundColor: '#d048b6',
-        pointBorderColor: 'rgba(255,255,255,0)',
-        pointHoverBackgroundColor: '#d048b6',
-        pointBorderWidth: 20,
-        pointHoverRadius: 4,
-        pointHoverBorderWidth: 15,
-        pointRadius: 4,
-        data: [80, 100, 70, 80, 120, 80],
-      }]
-    };
-
-    var myChart = new Chart(ctx, {
-      type: 'line',
-      data: data,
-      options: gradientChartOptionsConfigurationWithTooltipPurple
+            const ctx = document.getElementById('genderComparisonChart').getContext('2d');
+            renderPieChart(ctx, chartData);
+        })
+        .catch(error => console.error("Error fetching gender comparison data: ", error));
+}
+document.addEventListener('DOMContentLoaded', function () {
+    // Add event listeners to each dropdown item
+    document.getElementById('population-analysis').addEventListener('click', function () {
+        handleAnalysisSelection('population');
     });
-
-
-    var ctxGreen = document.getElementById("chartLineGreen").getContext("2d");
-
-    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-
-    gradientStroke.addColorStop(1, 'rgba(66,134,121,0.15)');
-    gradientStroke.addColorStop(0.4, 'rgba(66,134,121,0.0)'); //green colors
-    gradientStroke.addColorStop(0, 'rgba(66,134,121,0)'); //green colors
-
-    var data = {
-      labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV'],
-      datasets: [{
-        label: "My First dataset",
-        fill: true,
-        backgroundColor: gradientStroke,
-        borderColor: '#00d6b4',
-        borderWidth: 2,
-        borderDash: [],
-        borderDashOffset: 0.0,
-        pointBackgroundColor: '#00d6b4',
-        pointBorderColor: 'rgba(255,255,255,0)',
-        pointHoverBackgroundColor: '#00d6b4',
-        pointBorderWidth: 20,
-        pointHoverRadius: 4,
-        pointHoverBorderWidth: 15,
-        pointRadius: 4,
-        data: [90, 27, 60, 12, 80],
-      }]
-    };
-
-    var myChart = new Chart(ctxGreen, {
-      type: 'line',
-      data: data,
-      options: gradientChartOptionsConfigurationWithTooltipGreen
-
+    document.getElementById('literacy-analysis').addEventListener('click', function () {
+        handleAnalysisSelection('literacy');
     });
-
-
-
-    var chart_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    var chart_data = [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100];
-
-
-    var ctx = document.getElementById("chartBig1").getContext('2d');
-
-    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
-
-    gradientStroke.addColorStop(1, 'rgba(72,72,176,0.1)');
-    gradientStroke.addColorStop(0.4, 'rgba(72,72,176,0.0)');
-    gradientStroke.addColorStop(0, 'rgba(119,52,169,0)'); //purple colors
-    var config = {
-      type: 'line',
-      data: {
-        labels: chart_labels,
-        datasets: [{
-          label: "My First dataset",
-          fill: true,
-          backgroundColor: gradientStroke,
-          borderColor: '#d346b1',
-          borderWidth: 2,
-          borderDash: [],
-          borderDashOffset: 0.0,
-          pointBackgroundColor: '#d346b1',
-          pointBorderColor: 'rgba(255,255,255,0)',
-          pointHoverBackgroundColor: '#d346b1',
-          pointBorderWidth: 20,
-          pointHoverRadius: 4,
-          pointHoverBorderWidth: 15,
-          pointRadius: 4,
-          data: chart_data,
-        }]
-      },
-      options: gradientChartOptionsConfigurationWithTooltipPurple
-    };
-    var myChartData = new Chart(ctx, config);
-    $("#0").click(function() {
-      var data = myChartData.config.data;
-      data.datasets[0].data = chart_data;
-      data.labels = chart_labels;
-      myChartData.update();
+    document.getElementById('illiteracy-analysis').addEventListener('click', function () {
+        handleAnalysisSelection('illiteracy');
     });
-    $("#1").click(function() {
-      var chart_data = [80, 120, 105, 110, 95, 105, 90, 100, 80, 95, 70, 120];
-      var data = myChartData.config.data;
-      data.datasets[0].data = chart_data;
-      data.labels = chart_labels;
-      myChartData.update();
+    document.getElementById('tribes-analysis').addEventListener('click', function () {
+        handleAnalysisSelection('tribes');
     });
-
-    $("#2").click(function() {
-      var chart_data = [60, 80, 65, 130, 80, 105, 90, 130, 70, 115, 60, 130];
-      var data = myChartData.config.data;
-      data.datasets[0].data = chart_data;
-      data.labels = chart_labels;
-      myChartData.update();
+    document.getElementById('castes-analysis').addEventListener('click', function () {
+        handleAnalysisSelection('castes');
     });
+});
 
+// Function to handle the analysis selection and fetch data
+function handleAnalysisSelection(comparisonType) {
+    const year = document.getElementById('yearDropdown').value;  // Assuming this element holds the selected year
 
-    var ctx = document.getElementById("CountryChart").getContext("2d");
+    if (!year) {
+        alert('Please select a year.');
+        return;
+    }
 
-    var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
+    // Call the function to fetch and render gender comparison data
+    fetchGenderComparison(year, comparisonType);
+}
 
-    gradientStroke.addColorStop(1, 'rgba(29,140,248,0.2)');
-    gradientStroke.addColorStop(0.4, 'rgba(29,140,248,0.0)');
-    gradientStroke.addColorStop(0, 'rgba(29,140,248,0)'); //blue colors
+// Fetch Population Trends Data and Display as Line Chart
+function fetchPopulationTrends() {
+    fetch('/api/population-trends')
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                console.error("No population trends data available.");
+                return;
+            }
 
+            // Extract years and total_population for chart data
+            const years = data.map(item => item.year);
+            const population = data.map(item => item.total_population);
 
-    var myChart = new Chart(ctx, {
-      type: 'bar',
-      responsive: true,
-      legend: {
-        display: false
-      },
-      data: {
-        labels: ['USA', 'GER', 'AUS', 'UK', 'RO', 'BR'],
-        datasets: [{
-          label: "Countries",
-          fill: true,
-          backgroundColor: gradientStroke,
-          hoverBackgroundColor: gradientStroke,
-          borderColor: '#1f8ef1',
-          borderWidth: 2,
-          borderDash: [],
-          borderDashOffset: 0.0,
-          data: [53, 20, 10, 80, 100, 45],
-        }]
-      },
-      options: gradientBarChartConfiguration
-    });
+            // Prepare data for the line chart
+            const chartData = {
+                labels: years,  // X-axis labels (years)
+                datasets: [{
+                    label: 'Population Growth Over Time',
+                    data: population,  // Y-axis data (total population)
+                    borderColor: '#BF2818',  // Line color
+                    fill: false,  // Don't fill the area under the line
+                    borderWidth: 2
+                }]
+            };
 
-  },
+            // Get the canvas context for the Population Trends Chart
+            const ctx = document.getElementById('populationTrendsOverTimeChart').getContext('2d');
 
-  initGoogleMaps: function() {
-    var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
-    var mapOptions = {
-      zoom: 13,
-      center: myLatlng,
-      scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
-      styles: [{
-          "elementType": "geometry",
-          "stylers": [{
-            "color": "#1d2c4d"
-          }]
-        },
-        {
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#8ec3b9"
-          }]
-        },
-        {
-          "elementType": "labels.text.stroke",
-          "stylers": [{
-            "color": "#1a3646"
-          }]
-        },
-        {
-          "featureType": "administrative.country",
-          "elementType": "geometry.stroke",
-          "stylers": [{
-            "color": "#4b6878"
-          }]
-        },
-        {
-          "featureType": "administrative.land_parcel",
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#64779e"
-          }]
-        },
-        {
-          "featureType": "administrative.province",
-          "elementType": "geometry.stroke",
-          "stylers": [{
-            "color": "#4b6878"
-          }]
-        },
-        {
-          "featureType": "landscape.man_made",
-          "elementType": "geometry.stroke",
-          "stylers": [{
-            "color": "#334e87"
-          }]
-        },
-        {
-          "featureType": "landscape.natural",
-          "elementType": "geometry",
-          "stylers": [{
-            "color": "#023e58"
-          }]
-        },
-        {
-          "featureType": "poi",
-          "elementType": "geometry",
-          "stylers": [{
-            "color": "#283d6a"
-          }]
-        },
-        {
-          "featureType": "poi",
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#6f9ba5"
-          }]
-        },
-        {
-          "featureType": "poi",
-          "elementType": "labels.text.stroke",
-          "stylers": [{
-            "color": "#1d2c4d"
-          }]
-        },
-        {
-          "featureType": "poi.park",
-          "elementType": "geometry.fill",
-          "stylers": [{
-            "color": "#023e58"
-          }]
-        },
-        {
-          "featureType": "poi.park",
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#3C7680"
-          }]
-        },
-        {
-          "featureType": "road",
-          "elementType": "geometry",
-          "stylers": [{
-            "color": "#304a7d"
-          }]
-        },
-        {
-          "featureType": "road",
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#98a5be"
-          }]
-        },
-        {
-          "featureType": "road",
-          "elementType": "labels.text.stroke",
-          "stylers": [{
-            "color": "#1d2c4d"
-          }]
-        },
-        {
-          "featureType": "road.highway",
-          "elementType": "geometry",
-          "stylers": [{
-            "color": "#2c6675"
-          }]
-        },
-        {
-          "featureType": "road.highway",
-          "elementType": "geometry.fill",
-          "stylers": [{
-            "color": "#9d2a80"
-          }]
-        },
-        {
-          "featureType": "road.highway",
-          "elementType": "geometry.stroke",
-          "stylers": [{
-            "color": "#9d2a80"
-          }]
-        },
-        {
-          "featureType": "road.highway",
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#b0d5ce"
-          }]
-        },
-        {
-          "featureType": "road.highway",
-          "elementType": "labels.text.stroke",
-          "stylers": [{
-            "color": "#023e58"
-          }]
-        },
-        {
-          "featureType": "transit",
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#98a5be"
-          }]
-        },
-        {
-          "featureType": "transit",
-          "elementType": "labels.text.stroke",
-          "stylers": [{
-            "color": "#1d2c4d"
-          }]
-        },
-        {
-          "featureType": "transit.line",
-          "elementType": "geometry.fill",
-          "stylers": [{
-            "color": "#283d6a"
-          }]
-        },
-        {
-          "featureType": "transit.station",
-          "elementType": "geometry",
-          "stylers": [{
-            "color": "#3a4762"
-          }]
-        },
-        {
-          "featureType": "water",
-          "elementType": "geometry",
-          "stylers": [{
-            "color": "#0e1626"
-          }]
-        },
-        {
-          "featureType": "water",
-          "elementType": "labels.text.fill",
-          "stylers": [{
-            "color": "#4e6d70"
-          }]
+            // Render the line chart
+            new Chart(ctx, {
+                type: 'line',  // Change chart type to line
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false,  // Population can't be zero, so don't start from zero
+                            ticks: {
+                                stepSize: 1000000,  // Adjust the step size for y-axis labels
+                                callback: function(value) {
+                                    return value.toLocaleString();  // Format population with commas
+                                }
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Year'  // X-axis label
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.raw.toLocaleString();  // Format tooltip value with commas
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error("Error fetching population trends data: ", error));
+}
+
+// Fetch Caste and Tribe Analysis Data and Display as Bar Chart
+function fetchCasteTribeAnalysis(year) {
+    fetch(`/api/caste-tribe-analysis?year=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                console.error("No caste/tribe analysis data available.");
+                return;
+            }
+
+            // Extracting the data from the response (since it's an array with one object)
+            const yearData = data[0];
+            const totalCaste = yearData.total_caste;
+            const totalTribe = yearData.total_tribe;
+
+            // Prepare data for the bar chart
+            const chartData = {
+                labels: ['Caste Population', 'Tribe Population'],  // Categories for the bars
+                datasets: [{
+                    label: 'Population Distribution',
+                    data: [totalCaste, totalTribe],  // Values for each category
+                    backgroundColor: ['rgba(54, 162, 235, 0.1)', 'rgba(153, 102, 255, 0.1)'],  // Colors for the bars
+                    borderColor: ['rgba(54, 162, 235, 1)', 'rgba(153, 102, 255, 1)'],  // Border colors for the bars
+                    borderWidth: 1
+                }]
+            };
+
+            // Get the canvas context for the Caste and Tribe Analysis Chart
+            const ctx = document.getElementById('casteTribesAnalysisChart').getContext('2d');
+
+            // Render the bar chart
+            new Chart(ctx, {
+                type: 'bar',  // Change chart type to bar
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,  // Ensure the y-axis starts at 0
+                            ticks: {
+                                stepSize: 1000000  // Adjust the step size for the y-axis as needed
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Population Categories'  // X-axis label
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false  // Hide the legend, as there's only one dataset
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.raw.toLocaleString();  // Display the raw value with commas
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error("Error fetching caste/tribe analysis data: ", error));
+}
+
+// Function to render a bar chart (Literacy or Illiteracy)
+function renderBarChart(ctx, chartData) {
+    if (!chartData || !chartData.datasets || chartData.datasets[0].data.every(val => val === 0)) {
+        alert("No data available for this chart.");
+        return;
+    }
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    beginAtZero: true
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        beginAtZero: true,
+                        stepSize: 1000  // Adjust stepSize as needed based on your data
+                    }
+                }
+            }
         }
-      ]
-    };
-
-    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-    var marker = new google.maps.Marker({
-      position: myLatlng,
-      title: "Hello World!"
     });
+}
 
-    // To add the marker to the map, call setMap();
-    marker.setMap(map);
-  },
+// Fetch Literacy Data for Male and Female
+function fetchLiteracyAnalysis(year) {
+    fetch(`/api/literacy-analysis?year=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || !data[0]) {
+                console.error("No literacy analysis data available.");
+                return;
+            }
 
-  showNotification: function(from, align) {
-    color = Math.floor((Math.random() * 4) + 1);
+            // Extract male and female literacy rates from the data
+            const maleLiteracy = data[0].male_literates || 0;
+            const femaleLiteracy = data[0].female_literates || 0;
 
-    $.notify({
-      icon: "tim-icons icon-bell-55",
-      message: "Welcome to <b>Black Dashboard</b> - a beautiful freebie for every web developer."
+            const chartData = {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    label: 'Literacy ',
+                    data: [maleLiteracy, femaleLiteracy],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                    borderWidth: 1
+                }]
+            };
 
-    }, {
-      type: type[color],
-      timer: 8000,
-      placement: {
-        from: from,
-        align: align
-      }
-    });
-  }
+            const ctx = document.getElementById('literacyAnalysisChart').getContext('2d');
+            renderBarChart(ctx, chartData);
+        })
+        .catch(error => console.error("Error fetching literacy analysis data: ", error));
+}
 
-};
+// Fetch Illiteracy Data for Male and Female
+function fetchIlliteracyAnalysis(year) {
+    fetch(`/api/illiteracy-analysis?year=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || !data[0]) {
+                console.error("No illiteracy analysis data available.");
+                return;
+            }
+
+            // Extract male and female illiteracy rates from the data
+            const maleIlliteracy = data[0].male_illiterates || 0;
+            const femaleIlliteracy = data[0].female_illiterates || 0;
+
+            const chartData = {
+                labels: ['Male', 'Female'],
+                datasets: [{
+                    label: 'Illiteracy ',
+                    data: [maleIlliteracy, femaleIlliteracy],
+                    backgroundColor: ['rgb(155, 255, 86, 0.2)', 'rgb(255, 104, 71, 0.2)'],
+                    borderColor: ['rgb(155, 255, 86, 1)', 'rgb(255, 104, 71, 1)'],
+                    borderWidth: 1
+                }]
+            };
+
+            const ctx = document.getElementById('illiteracyAnalysisChart').getContext('2d');
+            renderBarChart(ctx, chartData);
+        })
+        .catch(error => console.error("Error fetching illiteracy analysis data: ", error));
+}
+
+// Fetch Ward-wise Analysis Data and Display as Scatter Plot
+function fetchWardAnalysis(year) {
+    fetch(`/api/ward-analysis?year=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                console.error("No ward-wise analysis data available.");
+                return;
+            }
+
+            // Extract ward numbers, total population, caste, and tribes data
+            const wards = data.map(item => item.wardno);
+            const totalPop = data.map(item => item.totalpop);
+            const totalCaste = data.map(item => item.totalcaste);
+            const totalTribes = data.map(item => item.totaltribes);
+
+            // Prepare data for the scatter plot
+            const chartData = {
+                datasets: [{
+                    label: 'Total Population',
+                    data: wards.map((ward, index) => ({ x: ward, y: totalPop[index] })),
+                    backgroundColor: '#FF6384',
+                    pointRadius: 5
+                }, {
+                    label: 'Total Caste',
+                    data: wards.map((ward, index) => ({ x: ward, y: totalCaste[index] })),
+                    backgroundColor: '#36A2EB',
+                    pointRadius: 5
+                }, {
+                    label: 'Total Tribes',
+                    data: wards.map((ward, index) => ({ x: ward, y: totalTribes[index] })),
+                    backgroundColor: '#4BC0C0',
+                    pointRadius: 5
+                }]
+            };
+
+            // Get the canvas context for the Ward Analysis Scatter Plot
+            const ctx = document.getElementById('wardWiseAnalysisChart').getContext('2d');
+
+            // Render the scatter plot
+            new Chart(ctx, {
+                type: 'scatter',  // Scatter plot
+                data: chartData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Ward Number'  // X-axis label
+                            },
+                            ticks: {
+                                stepSize: 1  // Set the step size for ward numbers
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Population / Caste / Tribes'  // Y-axis label
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                callback: function(value) {
+                                    return value.toLocaleString();  // Format y-axis values with commas
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.raw.y.toLocaleString();  // Format tooltip value with commas
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error("Error fetching ward analysis data: ", error));
+}
+document.addEventListener("DOMContentLoaded", function () {
+    // Call the function to fetch data with the default year
+    fetchPopulationTrends();
+    fetchGenderComparison(1991, 'population');
+    fetchLiteracyAnalysis(1991);
+    fetchIlliteracyAnalysis(1991);
+    fetchCasteTribeAnalysis(1991);
+    fetchWardAnalysis(1991);
+});
+
+// Event listener for year selection
+document.getElementById('yearDropdown').addEventListener('change', function() {
+    const selectedYear = this.value;
+    if (!selectedYear){
+        selectedYear = 1991
+    }
+    // Update the charts with the selected year
+    fetchPopulationTrends(selectedYear);
+    fetchGenderComparison(selectedYear, 'population');
+    fetchLiteracyAnalysis(selectedYear);
+    fetchIlliteracyAnalysis(selectedYear);
+    fetchCasteTribeAnalysis(selectedYear);
+    fetchWardAnalysis(selectedYear);
+});
