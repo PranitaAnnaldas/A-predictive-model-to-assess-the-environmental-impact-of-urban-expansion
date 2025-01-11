@@ -8,7 +8,6 @@ The project leverages data science techniques to predict future trends and analy
 Rainfall: Assessing how increasing urban populations affect and are impacted by water resources.
 Tree Census: Monitoring urban greenery and analyzing the impact of urbanization on tree cover and biodiversity.
 Temperature Trends: Evaluating urban heat islands and climate variations driven by population density and infrastructure development.
-![Screenshot 2025-01-11 225055](https://github.com/user-attachments/assets/b6382b26-5725-42bd-87c0-e561aead5a5a)
 
 Air Pollution: Investigating the contribution of population growth to air quality deterioration and its long-term implications.
 By integrating these environmental factors into the analysis, this project provides actionable insights into sustainable urban planning, resource allocation, and environmental management. The goal is to equip stakeholders with tools for adaptive decision-making to address the challenges of urban expansion while promoting environmental resilience and equity.
