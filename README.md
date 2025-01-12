@@ -122,6 +122,10 @@ Integrate additional factors such as economic data and advanced climate models f
 
 **DASHBOARD:**
 
-https://github.com/user-attachments/assets/49a7f831-d4c0-4a15-9b66-c893734cf147
+
+https://github.com/user-attachments/assets/8908ea86-dc4b-4f7b-bb6a-dc0bec730861
+
+
+
 
 
