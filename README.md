@@ -1,5 +1,6 @@
 
-A Predictive Model to Assess the Environmental Impact of Urban Expansion
+**A Predictive Model to Assess the Environmental Impact of Urban Expansion**
+
 **Overview**
 This project focuses on Predictive Analysis of Population Trends, offering a comprehensive dashboard to forecast and visualize population dynamics alongside key environmental factors. It supports urban planners and policymakers in managing the environmental and socio-economic impacts caused by rapid urbanization and population growth.
 
@@ -73,39 +74,41 @@ Cloud platforms such as Azure, Heroku, or AWS ensure scalability and accessibili
 
 **Installation**
 
-Clone this repository:
+**Clone this repository:**
 git clone https://github.com/PranitaAnnaldas/A-predictive-model-to-assess-the-environmental-impact-of-urban-expansion.git
 
-Navigate to the project directory:
+**Navigate to the project directory:**
 cd A-predictive-model-to-assess-the-environmental-impact-of-urban-expansion
 
-Install the required dependencies:
+**Install the required dependencies:**
 pip install -r requirements.txt
 Set up the PostgreSQL database and configure the connection in config.py.
 
-Usage
+**Usage:**
 Start the Flask application:
 python run.py
 Open your browser and navigate to http://localhost:5000 to access the dashboard.
 
-Dashboard Features
-Population Growth Trends:
+**Dashboard Features**
+
+**Population Growth Trends:**
 Interactive charts displaying historical and predicted population changes.
 
-Environmental Metrics:
+**Environmental Metrics:**
 Visualizations of factors such as rainfall, temperature trends, urban greenery, and air pollution, showing their interaction with population growth.
 
-Filter Options:
+**Filter Options:**
 Dynamic filtering by regions, years, demographic categories, and environmental parameters.
 
-Future Scope
-Real-Time Data Integration:
+**Future Scope**
+
+**Real-Time Data Integration:**
 Incorporate live data streams (e.g., from sensors or satellite imagery) to enhance accuracy and provide up-to-date insights.
 
-Geographic Expansion:
+**Geographic Expansion:**
 Extend the project's scope to include more cities and regions for a national-level impact.
 
-Enhanced Predictive Models:
+**Enhanced Predictive Models:**
 Integrate additional factors such as economic data and advanced climate models for deeper analysis.
 
 **WIREFRAME:**
